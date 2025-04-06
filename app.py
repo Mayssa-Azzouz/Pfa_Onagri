@@ -50,8 +50,8 @@ style_gouv = {
 }
 
 style_del = {
-    'fillColor': '#e6550d',
-    'color': '#636363',
+    'fillColor': '#3bdb6e',
+    'color': '#0c5e26',
     'weight': 1,
     'fillOpacity': 0.5,
     'dashArray': '5, 5'
