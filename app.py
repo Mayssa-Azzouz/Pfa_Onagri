@@ -39,15 +39,39 @@ static_data = {
 # ---- Carte Folium ----
 m = folium.Map(location=[37.2, 9.6], zoom_start=8)
 
-def style_function(x):
-    del_name = x['properties']['del_fr']
-    # Si la délégation cliquée correspond à Djoumine, la colorer en rouge
-    if del_name == "Djoumine":
-        return {'fillColor': 'red', 'color': 'black', 'weight': 2, 'fillOpacity': 0.5}
-    else:
-        return {'fillColor': 'gray', 'color': 'black', 'weight': 1, 'fillOpacity': 0.2}
+# Style des couches
+style_gouv = {
+    'fillColor': '#3186cc',
+    'color': '#000000',
+    'weight': 2,
+    'fillOpacity': 0.3
+}
 
-# Ajouter GeoJSON à la carte avec un tooltip
+style_del = {
+    'fillColor': '#e6550d',
+    'color': '#636363',
+    'weight': 1,
+    'fillOpacity': 0.5,
+    'dashArray': '5, 5'
+}
+
+# Couche Gouvernorats
+folium.GeoJson(
+    gdf_gouv,
+    name="Gouvernorats",
+    style_function=lambda x: style_gouv,
+    tooltip=folium.GeoJsonTooltip(
+        fields=['gouv_fr'],
+        aliases=["Gouvernorat:"],
+        sticky=True
+    ),
+    popup=folium.GeoJsonPopup(
+        fields=['gouv_fr', 'gouv_id'],
+        aliases=["Nom:", "Code:"]
+    )
+).add_to(m)
+
+# Couche Délégations (visible via contrôle)
 folium.GeoJson(
     gdf_del,
     name="Délégations",
@@ -66,48 +90,62 @@ with col1:
 
 # Afficher les données associées à la délégation cliquée
 with col2:
-    if selected_location and "last_active_drawing" in selected_location:
-        # Vérifier si des coordonnées ont été cliquées
-        clicked_coords = selected_location.get("last_clicked", None)
-        if clicked_coords:
-            lat, lon = clicked_coords["lat"], clicked_coords["lng"]
-            selected_delegation = None
+    st.subheader("Informations Administratives")
+    
+    # Affichage des infos selon ce qui est cliqué
+    if clicked_data.get("last_object_clicked"):
+        props = clicked_data["last_object_clicked"]["properties"]
+        
+        if 'del_fr' in props:  # Si délégation cliquée
+            st.markdown(f"### 🏘 {props['del_fr']}")
+            st.write(f"**Type:** Délégation")
+            st.write(f"**Code:** {props['del_id']}")
+            st.write(f"**Gouvernorat:** {props['gouv_fr']}")
+            
+            # Statistiques simulées
+            st.divider()
+            st.metric("Population", f"{np.random.randint(50000, 200000):,}")
+            
+        elif 'gouv_fr' in props:  # Si gouvernorat cliqué
+            st.markdown(f"### 🏛 {props['gouv_fr']}")
+            st.write(f"**Type:** Gouvernorat")
+            st.write(f"**Code:** {props['gouv_id']}")
+            
+            # Délégations du gouvernorat
+            delegations = gdf_del[gdf_del['gouv_id'] == props['gouv_id']]
+            st.divider()
+            st.markdown(f"**Délégations ({len(delegations)})**")
+            for _, row in delegations.head(5).iterrows():
+                st.write(f"- {row['del_fr']}")
+            
+            if len(delegations) > 5:
+                st.write(f"... et {len(delegations)-5} autres")
 
-            # Chercher si la délégation cliquée correspond à l'une des délégations de données statiques
-            for feature in gdf_del.iterrows():
-                feature = feature[1]
-                # Récupérer la géométrie du polygone
-                geom = feature['geometry']
-                if geom.geom_type == 'Polygon':
-                    polygon = geom
-                    # Vérifier si le point est à l'intérieur du polygone
-                    point = Point(lon, lat)
-                    if polygon.contains(point):
-                        selected_delegation = feature['del_fr']
-                        break
-                elif geom.geom_type == 'MultiPolygon':
-                    # Si la géométrie est un MultiPolygon, utiliser .geoms pour itérer sur chaque polygone
-                    for poly in geom.geoms:
-                        point = Point(lon, lat)
-                        if poly.contains(point):
-                            selected_delegation = feature['del_fr']
-                            break
-                    if selected_delegation:
-                        break
-
-            if selected_delegation and selected_delegation in static_data:
-                data = static_data[selected_delegation]
-                st.subheader(f"📍 Données pour : {selected_delegation} ({data['Gouvernorat']})")
-                st.metric("Pluviométrie Moyenne", f"{data['Moyenne Pluvio (mm)']} mm")
-                st.metric("Pluie Maximale", f"{data['Max Pluvio (mm)']} mm")
-                st.metric("Cumul du Mois", f"{data['Cumul Mensuel (mm)']} mm")
-                st.metric("Jours de Pluie", f"{data['Nombre de jours de pluie']} jours")
-
-                # Affichage de la tendance avec un graphique
-                st.line_chart(data["Tendance"], use_container_width=True)
-            else:
-                st.info("Aucune donnée disponible pour cette délégation.")
-        else:
-            st.info("Cliquez sur une délégation pour voir les données.")
-    else:
-        st.write("Cliquez sur une délégation pour voir les données.")
+# Options dans la sidebar
+with st.sidebar:
+    st.header("Options")
+    if st.checkbox("Afficher toutes les délégations", False):
+        folium.GeoJson(
+            gdf_del,
+            name="Délégations",
+            style_function=lambda x: style_del
+        ).add_to(m)
+    
+    if st.checkbox("Colorier par gouvernorat", True):
+        # Palette de couleurs aléatoires
+        colors = {gouv: f"#{np.random.randint(0, 0xFFFFFF):06x}" 
+                 for gouv in gdf_gouv['gouv_fr'].unique()}
+        
+        def style_by_gouv(feature):
+            gouv = feature['properties']['gouv_fr']
+            return {
+                'fillColor': colors.get(gouv, '#999999'),
+                'color': 'black',
+                'weight': 1,
+                'fillOpacity': 0.6
+            }
+        
+        folium.GeoJson(
+            gdf_gouv,
+            style_function=style_by_gouv
+        ).add_to(m)
