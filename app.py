@@ -48,8 +48,8 @@ style_gouv = {
 }
 
 style_del = {
-    'fillColor': '#e6550d',
-    'color': '#636363',
+    'fillColor': '#3bdb6e',
+    'color': '#0c5e26',
     'weight': 1,
     'fillOpacity': 0.5,
     'dashArray': '5, 5'
@@ -93,7 +93,35 @@ with col2:
     st.subheader("Informations Administratives")
     
     # Affichage des infos selon ce qui est cliqué
-    if clicked_data.get("last_object_clicked"):
+# Affichage des infos selon ce qui est cliqué
+if clicked_data.get("last_object_clicked"):
+    last_click = clicked_data["last_object_clicked"]
+
+    if "properties" in last_click:
+        props = last_click["properties"]
+
+        if 'del_fr' in props:  # Si délégation cliquée
+            st.markdown(f"### 🏘 {props['del_fr']}")
+            st.write(f"**Type:** Délégation")
+            st.write(f"**Code:** {props['del_id']}")
+            st.write(f"**Gouvernorat:** {props['gouv_fr']}")
+            st.divider()
+            st.metric("Population", f"{np.random.randint(50000, 200000):,}")
+        
+        elif 'gouv_fr' in props:  # Si gouvernorat cliqué
+            st.markdown(f"### 🏛 {props['gouv_fr']}")
+            st.write(f"**Type:** Gouvernorat")
+            st.write(f"**Code:** {props['gouv_id']}")
+            delegations = gdf_del[gdf_del['gouv_id'] == props['gouv_id']]
+            st.divider()
+            st.markdown(f"**Délégations ({len(delegations)})**")
+            for _, row in delegations.head(5).iterrows():
+                st.write(f"- {row['del_fr']}")
+            if len(delegations) > 5:
+                st.write(f"... et {len(delegations)-5} autres")
+    else:
+        st.warning("Aucune information de propriétés trouvée sur l'élément cliqué.")
+
         props = clicked_data["last_object_clicked"]["properties"]
         
         if 'del_fr' in props:  # Si délégation cliquée
