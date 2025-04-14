@@ -60,19 +60,37 @@ else:
 
 # --- Create Folium map
 m = folium.Map(location=[34, 9], zoom_start=6)
-style = {'fillColor': '#3bdb6e', 'color': '#0c5e26', 'weight': 1, 'fillOpacity': 0.5}
 
-# Add delegation layer
+# Style des couches
+style_del = {'fillColor': '#3bdb6e', 'color': '#0c5e26', 'weight': 1, 'fillOpacity': 0.5}
+style_gouv = {'fillColor': '#6495ED', 'color': '#1E90FF', 'weight': 2, 'fillOpacity': 0.4}
+
+# --- Layer Délégations
 folium.GeoJson(
     gdf_del,
     name="Délégations",
-    style_function=lambda x: style,
+    style_function=lambda x: style_del,
     tooltip=folium.GeoJsonTooltip(
         fields=['del_fr', 'gouv_fr', 'del_ar'],
         aliases=["Délégation:", "Gouvernorat:", "Nom arabe:"],
         sticky=True
     )
 ).add_to(m)
+
+# --- Layer Gouvernorats (cliquable aussi)
+folium.GeoJson(
+    gdf_gouv,
+    name="Gouvernorats",
+    style_function=lambda x: style_gouv,
+    tooltip=folium.GeoJsonTooltip(
+        fields=['gouv_fr', 'gouv_ar'],
+        aliases=["Gouvernorat (FR):", "Gouvernorat (AR):"],
+        sticky=True
+    )
+).add_to(m)
+
+# --- Ajouter le contrôle des layers
+folium.LayerControl(collapsed=False).add_to(m)
 
 # --- Layout: map + dashboard
 col1, col2 = st.columns([2, 1])
@@ -82,14 +100,23 @@ with col1:
 
 with col2:
     clicked_properties = None
+
     if map_data and "last_object_clicked" in map_data:
+        # Essayer d'abord la délégation
         clicked_delegation = find_clicked_delegation(map_data["last_object_clicked"], gdf_del)
+        clicked_gouv = find_clicked_delegation(map_data["last_object_clicked"], gdf_gouv)
+
         if clicked_delegation is not None:
             clicked_properties = {
                 'del_ar': clicked_delegation['del_ar'],
                 'del_fr': clicked_delegation['del_fr'],
                 'gouv_fr': clicked_delegation['gouv_fr']
             }
+            show_dashboard(clicked_properties, df_pluvio, graph_type)
 
-    # Show dashboard if a delegation is selected
-    show_dashboard(clicked_properties, df_pluvio, graph_type)
+        elif clicked_gouv is not None:
+            st.info(f"📍 Gouvernorat sélectionné : {clicked_gouv['gouv_fr']} / {clicked_gouv['gouv_ar']}")
+    
+    elif clicked_properties is None:
+        show_dashboard(None, df_pluvio, graph_type)
+
