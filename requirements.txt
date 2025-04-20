@@ -7,3 +7,6 @@ plotly
 arabic-reshaper
 python-bidi
 shapely
+datetime
+streamlit-elements
+
