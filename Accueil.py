@@ -96,7 +96,7 @@ st.markdown(f"""
 # 🚀 Barre de navigation
 selected_page = st.radio(
     "Navigation",
-    options=["🏠 Accueil", "🌍 Thèmes ODD", "🌡️ Climat", "📊 Données", "ℹ️ À propos"],
+    options=["🏠 Accueil",  "🌧️ Pluviométrie", "🌍 Thèmes ODD", "🌡️ Climat", "📊 Données", "ℹ️ À propos"],
     horizontal=True,
     key="navbar",
     label_visibility="collapsed"
@@ -175,6 +175,8 @@ with st.container():
         st.markdown("</div>", unsafe_allow_html=True)
     
     # ==================== AUTRES PAGES ====================
+    elif selected_page == "🌧️ Pluviométrie":
+        st.switch_page("pages/Pluviometrie.py") 
     elif selected_page == "🌍 Thèmes ODD":
         st.title("Thèmes ODD")
         st.write("Contenu des différents thèmes ODD...")
