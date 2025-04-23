@@ -15,6 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
 # 🎨 Palette de couleurs cohérente
 COLORS = {
     "sky_blue": "#00B4D8",
