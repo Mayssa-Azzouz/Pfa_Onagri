@@ -12,8 +12,12 @@ st.set_page_config(
     layout="wide",
     page_title="SmartSDGTunisia - Répartition biologique",
     page_icon="🌱",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
+
+# Import et affichage de la navbar
+from components.navbar import render_navbar
+render_navbar("Thèmes ODD")  # Adaptez selon votre structure de navigation
 
 # 🎨 Palette de couleurs cohérente
 COLORS = {
@@ -29,6 +33,25 @@ COLORS = {
 # --- CSS Personnalisé ---
 st.markdown(f"""
 <style>
+    /* Masquer les éléments par défaut de Streamlit */
+    header, footer {{
+        visibility: hidden;
+    }}
+    
+    #MainMenu {{
+        display: none;
+    }}
+    
+    /* Fix pour le z-index */
+    section[data-testid="stSidebar"] {{
+        z-index: 1001;
+    }}
+    
+    /* Ajustement de la position du contenu */
+    .block-container {{
+        padding-top: 80px;
+    }}
+
     /* Style global existant */
     [data-testid="stHeader"] {{
         background-color: {COLORS['dark_blue']} !important;

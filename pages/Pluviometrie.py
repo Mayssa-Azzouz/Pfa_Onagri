@@ -12,9 +12,11 @@ st.set_page_config(
     layout="wide",
     page_title="SmartSDGTunisia - Pluviométrie",
     page_icon="🌧️",
-    initial_sidebar_state="expanded"
-)
+    initial_sidebar_state="collapsed")
 
+# Import et affichage de la navbar
+from components.navbar import render_navbar
+render_navbar("Climat")  # Ou "Pluviométrie" selon votre structure
 
 # 🎨 Palette de couleurs cohérente
 COLORS = {
@@ -30,12 +32,25 @@ COLORS = {
 # --- CSS Personnalisé ---
 st.markdown(f"""
 <style>
-    /* Style de la navbar */
-    [data-testid="stHeader"] {{
-        background-color: {COLORS['dark_blue']} !important;
-        padding: 0;
+    /* Masquer les éléments par défaut de Streamlit */
+    header, footer {{
+        visibility: hidden;
     }}
     
+    #MainMenu {{
+        display: none;
+    }}
+    
+    /* Fix pour le z-index */
+    section[data-testid="stSidebar"] {{
+        z-index: 1001;
+    }}
+    
+    /* Ajustement de la position du contenu */
+    .block-container {{
+        padding-top: 100px;
+    }}
+
     /* Texte blanc dans la sidebar */
     .stSidebar .css-1oe5cao {{
         color: white !important;
@@ -130,48 +145,7 @@ st.markdown(f"""
         border-radius: 8px !important;
         padding: 12px 16px !important;
     }}
-    
-    /* Navbar personnalisée */
-    .navbar {{
-        display: flex;
-        justify-content: space-around;
-        background-color: {COLORS['dark_blue']};
-        padding: 15px 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }}
-    
-    .nav-item {{
-        color: white !important;
-        padding: 8px 20px;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        font-weight: 500;
-    }}
-    
-    .nav-item:hover {{
-        background-color: {COLORS['sky_blue']};
-        transform: translateY(-2px);
-    }}
-    
-    .nav-item.active {{
-        background-color: {COLORS['vivid_orange']};
-        font-weight: bold;
-    }}
 </style>
-""", unsafe_allow_html=True)
-
-df_pluvio = ""
-
-# --- Navbar Personnalisée ---
-st.markdown("""
-<div class="navbar">
-    <a href="#" class="nav-item active">🏠 Accueil</a>
-    <a href="#" class="nav-item">🌍 Thèmes ODD</a>
-    <a href="#" class="nav-item">🌡️ Climat</a>
-    <a href="#" class="nav-item">📊 Données</a>
-    <a href="#" class="nav-item">ℹ️ À propos</a>
-</div>
 """, unsafe_allow_html=True)
 
 # --- Chargement des données géographiques ---

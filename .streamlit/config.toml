@@ -1,3 +1,9 @@
+[client]
+toolbarMode = "minimal"
+
+[ui]
+hideTopBar = true
+
 [theme]
 primaryColor = "#1E90FF"  # Bleu vif
 backgroundColor = "#F0F8FF"  # Alice blue
