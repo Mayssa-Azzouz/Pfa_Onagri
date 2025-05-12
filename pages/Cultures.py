@@ -8,7 +8,10 @@ from streamlit_folium import st_folium
 
 st.set_page_config(page_title="Zones d'intervention ODESYPANO", layout="wide")
 
+st.session_state["current_page"] = "Cultures"
 st.title("🌍 Zones d’intervention de l’ODESYPANO")
+from components.navbar import display_navbar  # import après set_page_config
+
 
 # Bypass SSL verification (temporairement)
 ssl._create_default_https_context = ssl._create_unverified_context
