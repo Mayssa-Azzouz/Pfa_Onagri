@@ -212,6 +212,9 @@ def load_data():
     # Charger les données Excel
     df = pd.read_excel("Rainfall_data.xlsx", sheet_name="Data")
     
+    # Convertir les noms de colonnes en chaînes de caractères
+    df.columns = [str(col) for col in df.columns]
+    
     # Charger les informations des stations
     stations_df = pd.read_excel("Rainfall_data.xlsx", sheet_name="Note")
     stations_df = stations_df.rename(columns={"N": "ID", "Name": "Station"})
@@ -418,29 +421,38 @@ selected_stations = st.multiselect(
 if selected_stations:
     # Filtrer les données pour les stations sélectionnées
     station_ids = merged_df[merged_df['Station'].isin(selected_stations)]['ID'].tolist()
-    df_filtered = df[['Date'] + [str(id) for id in station_ids]]
-    df_filtered = df_filtered.melt(id_vars='Date', var_name='ID', value_name='Précipitation')
-    df_filtered['ID'] = df_filtered['ID'].astype(int)
-    df_filtered = pd.merge(df_filtered, merged_df[['ID', 'Station']], on='ID')
     
-    # Créer le graphique
-    fig = px.line(
-        df_filtered, 
-        x='Date', 
-        y='Précipitation', 
-        color='Station',
-        title='Évolution des précipitations par station',
-        labels={'Précipitation': 'Précipitation (mm)', 'Date': 'Date'},
-        color_discrete_sequence=[COLORS['sky_blue'], COLORS['mint_green'], COLORS['vivid_orange'], 
-                               COLORS['raspberry_pink'], COLORS['soft_purple']]
-    )
+    # Vérifier quelles colonnes existent réellement dans le DataFrame
+    available_columns = [col for col in df.columns if col != 'Date']
+    valid_station_ids = [str(id) for id in station_ids if str(id) in available_columns]
     
-    fig.update_layout(
-        plot_bgcolor='white',
-        paper_bgcolor='white',
-        hovermode='x unified'
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+    if not valid_station_ids:
+        st.warning("Aucune donnée disponible pour les stations sélectionnées.")
+    else:
+        # Filtrer avec seulement les colonnes disponibles
+        df_filtered = df[['Date'] + valid_station_ids]
+        df_filtered = df_filtered.melt(id_vars='Date', var_name='ID', value_name='Précipitation')
+        df_filtered['ID'] = df_filtered['ID'].astype(int)
+        df_filtered = pd.merge(df_filtered, merged_df[['ID', 'Station']], on='ID')
+        
+        # Créer le graphique
+        fig = px.line(
+            df_filtered, 
+            x='Date', 
+            y='Précipitation', 
+            color='Station',
+            title='Évolution des précipitations par station',
+            labels={'Précipitation': 'Précipitation (mm)', 'Date': 'Date'},
+            color_discrete_sequence=[COLORS['sky_blue'], COLORS['mint_green'], COLORS['vivid_orange'], 
+                                   COLORS['raspberry_pink'], COLORS['soft_purple']]
+        )
+        
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            hovermode='x unified'
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
 else:
     st.warning("Veuillez sélectionner au moins une station pour visualiser les données temporelles.")
