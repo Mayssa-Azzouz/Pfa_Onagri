@@ -13,7 +13,7 @@ from io import BytesIO
 # Configuration de la page
 st.set_page_config(
     layout="wide",
-    page_title="Dashboard Climatique Tunisie - Sud",
+    page_title="Dashboard Climatique Tunisie",
     page_icon="🌦️",
     initial_sidebar_state="expanded"
 )
@@ -68,10 +68,13 @@ st.markdown("""
         background-color: #f8d7da;
         color: #721c24;
     }
+    .new-station {
+        border-left: 4px solid #f6c23e !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Données des stations avec les coordonnées exactes
+# Données des stations avec la nouvelle station ajoutée
 STATIONS = {
     "Station Gabes": {
         "api_url": "https://catalog.agridata.tn/dataset/bef2a022-6834-452a-a1c9-40d123db2165/resource/adf52f71-a59b-4674-96a2-c7702151918b/download/adf52f71-a59b-4674-96a2-c7702151918b",
@@ -90,54 +93,51 @@ STATIONS = {
         "region": "Kébili",
         "interval": "15 minutes",
         "active_since": "13/02/2017 11:19"
+    },
+    "Station Oued Souhil Nabeul": {
+        "api_url": "https://catalog.agridata.tn/dataset/3960f86d-3f0c-45e4-99bd-ad63b9b55e64/resource/105f84c3-3d5e-420f-93cf-5b8b7e18bbc1/download/105f84c3-3d5e-420f-93cf-5b8b7e18bbc1",
+        "lat": 36.547951,
+        "lon": 9.010971,
+        "altitude": 158.7,
+        "region": "Nabeul",
+        "interval": "30 minutes",
+        "active_since": "17/11/2015 09:00",
+        "data_send_time": "7:00 et 17:00"
     }
 }
 
 @st.cache_data(ttl=3600)
 def fetch_station_data(api_url, station_name):
     try:
-        # Simulation de données en attendant que les API fonctionnent
-        sample_data = {
-            "records": [
-                {
-                    "date": (datetime.now() - pd.Timedelta(days=4)).strftime("%Y-%m-%d"),
-                    "temperature": np.random.uniform(24, 28),
-                    "humidity": np.random.uniform(35, 45),
-                    "precipitation": np.random.uniform(0, 5),
-                    "wind_speed": np.random.uniform(5, 15)
-                },
-                {
-                    "date": (datetime.now() - pd.Timedelta(days=3)).strftime("%Y-%m-%d"),
-                    "temperature": np.random.uniform(24, 28),
-                    "humidity": np.random.uniform(35, 45),
-                    "precipitation": np.random.uniform(0, 5),
-                    "wind_speed": np.random.uniform(5, 15)
-                },
-                {
-                    "date": (datetime.now() - pd.Timedelta(days=2)).strftime("%Y-%m-%d"),
-                    "temperature": np.random.uniform(24, 28),
-                    "humidity": np.random.uniform(35, 45),
-                    "precipitation": np.random.uniform(0, 5),
-                    "wind_speed": np.random.uniform(5, 15)
-                },
-                {
-                    "date": (datetime.now() - pd.Timedelta(days=1)).strftime("%Y-%m-%d"),
-                    "temperature": np.random.uniform(24, 28),
-                    "humidity": np.random.uniform(35, 45),
-                    "precipitation": np.random.uniform(0, 5),
-                    "wind_speed": np.random.uniform(5, 15)
-                },
-                {
-                    "date": datetime.now().strftime("%Y-%m-%d"),
-                    "temperature": np.random.uniform(24, 28),
-                    "humidity": np.random.uniform(35, 45),
-                    "precipitation": np.random.uniform(0, 5),
-                    "wind_speed": np.random.uniform(5, 15)
-                }
-            ]
-        }
+        # Simulation de données différenciées par station
+        if station_name == "Station Oued Souhil Nabeul":
+            sample_data = {
+                "records": [
+                    {
+                        "date": (datetime.now() - pd.Timedelta(days=i)).strftime("%Y-%m-%d"),
+                        "temperature": np.random.uniform(18, 25),
+                        "humidity": np.random.uniform(60, 80),
+                        "precipitation": np.random.uniform(0, 10),
+                        "wind_speed": np.random.uniform(10, 20)
+                    }
+                    for i in range(5, 0, -1)
+                ]
+            }
+        else:
+            sample_data = {
+                "records": [
+                    {
+                        "date": (datetime.now() - pd.Timedelta(days=i)).strftime("%Y-%m-%d"),
+                        "temperature": np.random.uniform(24, 28),
+                        "humidity": np.random.uniform(35, 45),
+                        "precipitation": np.random.uniform(0, 5),
+                        "wind_speed": np.random.uniform(5, 15)
+                    }
+                    for i in range(5, 0, -1)
+                ]
+            }
         
-        # Transformation des données simulées
+        # Transformation des données
         df = pd.DataFrame(sample_data['records'])
         
         # Nettoyage des données
@@ -154,15 +154,15 @@ def fetch_station_data(api_url, station_name):
         st.error(f"Erreur temporaire - Utilisation de données simulées pour {station_name}")
         return pd.DataFrame({
             'date': pd.date_range(end=datetime.now(), periods=5),
-            'temp': np.random.uniform(24, 28, 5),
-            'humidity': np.random.uniform(35, 45, 5),
-            'precipitation': np.random.uniform(0, 5, 5),
-            'wind_speed': np.random.uniform(5, 15, 5)
+            'temp': np.random.uniform(20, 30, 5),
+            'humidity': np.random.uniform(30, 80, 5),
+            'precipitation': np.random.uniform(0, 10, 5),
+            'wind_speed': np.random.uniform(5, 20, 5)
         })
 
-# Fonction pour créer la carte centrée sur le Sud tunisien
+# Fonction pour créer la carte
 def create_stations_map(selected_stations):
-    m = folium.Map(location=[33.5, 9.5], zoom_start=8, tiles='CartoDB positron')
+    m = folium.Map(location=[34.0, 9.5], zoom_start=7, tiles='CartoDB positron')
     
     for station_name in selected_stations:
         station = STATIONS[station_name]
@@ -186,16 +186,19 @@ def create_stations_map(selected_stations):
                     <b>Température:</b> {temp:.1f}°C<br>
                     <b>Humidité:</b> {humidity:.1f}%<br>
                     <b>Intervalle:</b> {station['interval']}<br>
+                    {'<b>Envoi des données:</b> ' + station['data_send_time'] + '<br>' if 'data_send_time' in station else ''}
                     <b>Actif depuis:</b> {station['active_since']}
                 </p>
             </div>
             """
             
+            icon_color = 'orange' if station_name == "Station Oued Souhil Nabeul" else 'blue'
+            
             folium.Marker(
                 location=[station['lat'], station['lon']],
                 popup=folium.Popup(popup_content, max_width=300),
                 tooltip=station_name,
-                icon=folium.Icon(color='blue', icon='cloud', prefix='fa')
+                icon=folium.Icon(color=icon_color, icon='cloud', prefix='fa')
             ).add_to(m)
     
     return m
@@ -203,8 +206,8 @@ def create_stations_map(selected_stations):
 # Header du dashboard
 st.markdown("""
 <div class="header">
-    <h1 style="margin:0;padding:0;">🌦️ Dashboard Climatique Sud Tunisie</h1>
-    <p style="margin:0;padding:0;font-size:1.1em;">Surveillance des stations de Gabès et Kébili</p>
+    <h1 style="margin:0;padding:0;">🌦️ Dashboard Climatique Tunisie</h1>
+    <p style="margin:0;padding:0;font-size:1.1em;">Surveillance des stations météorologiques</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -242,11 +245,13 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 📍 Informations stations")
     for name, station in STATIONS.items():
+        station_class = "new-station" if name == "Station Oued Souhil Nabeul" else ""
         st.markdown(f"""
-        <div style="font-size:0.8em;margin-bottom:10px;padding:10px;background:#f0f0f0;border-radius:5px;">
+        <div class="station-card {station_class}">
             <b>{station['region']}</b><br>
-            Lat: {station['lat']:.6f}, Lon: {station['lon']:.6f}<br>
-            Alt: {station['altitude']}m • Depuis: {station['active_since']}
+            <small>Lat: {station['lat']:.6f}, Lon: {station['lon']:.6f}</small><br>
+            <small>Alt: {station['altitude']}m • Depuis: {station['active_since']}</small>
+            {'<br><small>Envoi: ' + station['data_send_time'] + '</small>' if 'data_send_time' in station else ''}
         </div>
         """, unsafe_allow_html=True)
     
@@ -264,11 +269,12 @@ with st.sidebar:
 
 # Section carte interactive
 if selected_stations:
-    st.markdown("## 🗺️ Carte des stations du Sud tunisien")
+    st.markdown("## 🗺️ Carte des stations")
     with st.spinner("Chargement de la carte..."):
         m = create_stations_map(selected_stations)
         st_folium(m, width=1200, height=500, key="map")
 
+# [Les sections suivantes restent identiques...]
 # Section indicateurs clés
 if selected_stations:
     st.markdown("## 📊 Indicateurs clés")
@@ -286,8 +292,9 @@ if selected_stations:
                 delta_temp = (last_data.get('temp', 0) - prev_data.get('temp', 0)) if prev_data is not None else None
                 delta_humidity = (last_data.get('humidity', 0) - prev_data.get('humidity', 0)) if prev_data is not None else None
                 
+                card_class = "new-station" if station_name == "Station Oued Souhil Nabeul" else ""
                 st.markdown(f"""
-                <div class="station-card">
+                <div class="station-card {card_class}">
                     <h3 style="margin-top:0;color:#4e73df;">{station_name}</h3>
                     <p style="color:#666;margin-bottom:15px;">
                         <i class="fa fa-map-marker"></i> {station_data['region']} • Alt: {station_data['altitude']}m
@@ -484,14 +491,10 @@ if selected_stations:
             )
         
         with col2:
-            # Export Excel - Version corrigée
+            # Export Excel
             excel_buffer = BytesIO()
-            
-            # Utilisation de pd.ExcelWriter avec le buffer
             with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
                 df.to_excel(writer, index=False, sheet_name='Donnees_Climat')
-            
-            # Important: réinitialiser la position du buffer
             excel_buffer.seek(0)
             
             st.download_button(
