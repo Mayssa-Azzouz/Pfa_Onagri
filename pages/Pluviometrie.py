@@ -14,24 +14,32 @@ st.set_page_config(
     page_icon="🌧️",
     initial_sidebar_state="collapsed")
 
-# Import et affichage de la navbar
-from components.navbar import render_navbar
-render_navbar("Climat")  # Ou "Pluviométrie" selon votre structure
-
-# 🎨 Palette de couleurs cohérente
+# 🎨 Palette de couleurs ONAGRI améliorée (version verte)
 COLORS = {
-    "sky_blue": "#00B4D8",
-    "mint_green": "#43AA8B",
-    "vivid_orange": "#F8961E",
-    "raspberry_pink": "#F15BB5",
-    "soft_purple": "#9B5DE5",
-    "light_gray": "#F0F0F0",
-    "dark_blue": "#1A1A2E"
+    "primary_green": "#1E6C41",       # Vert foncé principal
+    "dark_green": "#2E7D32",          # Vert plus doux pour navbar
+    "light_green": "#78C27D",         # Vert clair
+    "lighter_green": "#C8E6C9",       # Vert très clair
+    "bg_green": "#F5FBF5",            # Fond vert très très clair
+    "white": "#FFFFFF",
+    "dark_text": "#263238",           # Texte foncé
+    "light_text": "#607D8B",          # Texte secondaire
+    "accent_orange": "#1E6C41",       # Orange plus vif
+    "accent_blue": "#1976D2",         # Bleu pour complément
+    "gradient_start": "#1E6C41",      # Début gradient
+    "gradient_end": "#4CAF50"         # Fin gradient
 }
 
 # --- CSS Personnalisé ---
 st.markdown(f"""
 <style>
+    /* Reset et styles de base */
+    * {{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }}
+    
     /* Masquer les éléments par défaut de Streamlit */
     header, footer {{
         visibility: hidden;
@@ -46,98 +54,227 @@ st.markdown(f"""
         z-index: 1001;
     }}
     
+    /* Application principale */
+    .stApp {{
+        background-color: {COLORS['bg_green']};
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: {COLORS['dark_text']};
+        line-height: 1.6;
+    }}
+    
+    /* Navigation modernisée */
+    .navbar {{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(135deg, {COLORS['primary_green']}, {COLORS['dark_green']});
+        padding: 0.8rem 0;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: center;
+    }}
+    
+    .nav-container {{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 1.5rem;
+    }}
+    
+    .nav-brand {{
+        color: {COLORS['white']};
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-right: 2.5rem;
+        display: flex;
+        align-items: center;
+    }}
+    
+    .nav-links {{
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }}
+    
+    .nav-links::-webkit-scrollbar {{
+        display: none;
+    }}
+    
+    .nav-link {{
+        color: {COLORS['white']} !important;
+        text-decoration: none !important;
+        padding: 0.6rem 1.2rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+    }}
+    
+    .nav-link:hover {{
+        background: rgba(255,255,255,0.15);
+        transform: translateY(-2px);
+    }}
+    
+    .nav-link.active {{
+        background: {COLORS['primary_green']};
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }}
+    
+    .nav-icon {{
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }}
+    
+    /* Contenu principal */
+    .main-content {{
+        padding-top: 5rem;
+        padding-bottom: 2rem;
+    }}
+    
     /* Ajustement de la position du contenu */
     .block-container {{
         padding-top: 100px;
     }}
-
-    /* Texte blanc dans la sidebar */
-    .stSidebar .css-1oe5cao {{
-        color: white !important;
-    }}
-    
-    /* Style global */
-    .stApp {{
-        background-color: {COLORS['light_gray']};
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }}
     
     /* Titres */
     h1, h2, h3, h4 {{
-        color: {COLORS['dark_blue']};
+        color: {COLORS['primary_green']};
         font-weight: 600;
     }}
     
-    /* Cartes et sections */
+    .section-title {{
+        color: {COLORS['primary_green']};
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 30px 0 20px 0;
+        position: relative;
+        padding-bottom: 10px;
+    }}
+    
+    .section-title:after {{
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, {COLORS['accent_orange']}, transparent);
+        border-radius: 2px;
+    }}
+    
+    /* Cartes modernes */
     .card {{
         background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        margin-bottom: 20px;
-        border-left: 4px solid {COLORS['sky_blue']};
-        transition: all 0.3s ease;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+        transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+        border: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }}
     
     .card:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     }}
     
-    .section-title {{
-        color: {COLORS['dark_blue']};
-        border-bottom: 2px solid {COLORS['vivid_orange']};
-        padding-bottom: 8px;
-        margin-bottom: 20px;
+    .card-title {{
+        color: {COLORS['primary_green']};
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
     }}
     
-    /* Sidebar */
+    .card-icon {{
+        margin-right: 10px;
+        font-size: 1.4rem;
+    }}
+    
+    .card-value {{
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: {COLORS['dark_text']};
+        margin: 10px 0;
+    }}
+    
+    .card-footer {{
+        margin-top: auto;
+        color: {COLORS['light_text']};
+        font-size: 0.9rem;
+    }}
+    
+    /* Sidebar améliorée */
     section[data-testid="stSidebar"] {{
-        background-color: {COLORS['dark_blue']} !important;
+        background: linear-gradient(180deg, {COLORS['gradient_start']}, {COLORS['gradient_end']}) !important;
+        padding: 20px !important;
     }}
     
-    .sidebar .sidebar-content {{
-        background: linear-gradient(180deg, {COLORS['dark_blue']}, #1E1E3C) !important;
-        padding: 20px 15px !important;
+    .sidebar-title {{
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        text-align: center;
     }}
     
-    /* Widgets dans la sidebar */
-    .stSidebar .stDateInput, 
-    .stSidebar .stSelectbox,
+    .sidebar-subtitle {{
+        color: rgba(255,255,255,0.9);
+        font-size: 0.95rem;
+        text-align: center;
+        margin-bottom: 25px;
+    }}
+    
+    .stSidebar .stSelectbox, 
+    .stSidebar .stSlider,
+    .stSidebar .stTextInput,
+    .stSidebar .stDateInput,
     .stSidebar .stFileUploader {{
-        background: rgba(255,255,255,0.95) !important;
+        background-color: rgba(255,255,255,0.9) !important;
         border-radius: 8px !important;
-        padding: 8px !important;
-        border: 1px solid {COLORS['light_gray']} !important;
+        padding: 8px 12px !important;
     }}
     
     .stSidebar label {{
         color: white !important;
-        font-weight: 400 !important;
+        font-weight: 500 !important;
     }}
     
     /* Boutons */
     .stButton>button {{
-        background: {COLORS['vivid_orange']} !important;
+        background: linear-gradient(135deg, {COLORS['gradient_start']}, {COLORS['gradient_end']}) !important;
         color: white !important;
-        border-radius: 8px !important;
-        padding: 10px 16px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s ease !important;
         border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 24px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s !important;
     }}
     
     .stButton>button:hover {{
-        background: {COLORS['raspberry_pink']} !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
     }}
     
     /* Carte Folium container */
     .folium-map {{
-        border-radius: 12px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
-        border: 1px solid {COLORS['light_gray']} !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
+        border: none !important;
+        overflow: hidden;
     }}
     
     /* Messages */
@@ -145,8 +282,84 @@ st.markdown(f"""
         border-radius: 8px !important;
         padding: 12px 16px !important;
     }}
+    
+    /* Conteneur KPI local */
+    .local-kpi-container {{
+        background: white;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }}
+    
+    .local-kpi-title {{
+        color: {COLORS['primary_green']};
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }}
+    
+    .local-kpi-card {{
+        background: {COLORS['lighter_green']};
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }}
+    
+    .local-kpi-card:hover {{
+        background: {COLORS['light_green']};
+        transform: translateX(5px);
+    }}
+    
+    .local-kpi-label {{
+        color: {COLORS['dark_text']};
+        font-weight: 500;
+        font-size: 0.95rem;
+    }}
+    
+    .local-kpi-value {{
+        color: {COLORS['primary_green']};
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin: 5px 0;
+    }}
 </style>
 """, unsafe_allow_html=True)
+
+# --- Barre de navigation personnalisée ---
+def render_navbar(current="Pluviométrie"):
+    """Barre de navigation modernisée"""
+    st.markdown(f"""
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🌾 ONAGRI</div>
+            <div class="nav-links">
+                <a href="/" class="nav-link {'active' if current == 'Accueil' else ''}" target="_self">
+                    <span class="nav-icon">🏠</span> Accueil
+                </a>
+                <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
+                    <span class="nav-icon">🌧️</span> Pluviométrie
+                </a>
+                <a href="/rainfull_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
+                    <span class="nav-icon">🌦️</span> Siliana/Kairouan
+                </a>
+                <a href="/Repartition_Biol" class="nav-link {'active' if current == 'Répartition Bio' else ''}" target="_self">
+                    <span class="nav-icon">🧬</span> Biologique
+                </a>
+                <a href="/Eau_Portale" class="nav-link {'active' if current == 'Eau Potable' else ''}" target="_self">
+                    <span class="nav-icon">💧</span> Eau Potable
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="main-content">
+    """, unsafe_allow_html=True)
+
+# --- Affichage de la navbar ---
+render_navbar("Pluviométrie")
 
 # --- Chargement des données géographiques ---
 gdf_gouv, gdf_del = load_geodata()
@@ -156,48 +369,23 @@ with st.sidebar:
     # En-tête de la sidebar
     st.markdown(f"""
     <div style="
-        background: linear-gradient(135deg, {COLORS['soft_purple']}, {COLORS['sky_blue']});
-        padding: 25px;
-        border-radius: 12px;
+        background: linear-gradient(135deg, {COLORS['gradient_start']}, {COLORS['gradient_end']});
+        padding: 25px 20px;
+        border-radius: 16px;
         margin-bottom: 30px;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     ">
-        <h2 style="color: white; margin: 0; font-weight: 700;">🌧️ PluvioMap TN</h2>
-        <p style="color: rgba(255,255,255,0.9); margin: 5px 0 0 0; font-size: 14px;">
-            Analyse interactive des précipitations
-        </p>
+        <div class="sidebar-title">🌧️ PluvioMap TN</div>
+        <div class="sidebar-subtitle">Analyse interactive des précipitations</div>
     </div>
     """, unsafe_allow_html=True)
     
     # Section Importation
     st.markdown(f"""
-    <div style="
-        background: rgba(255,255,255,0.95);
-        padding: 18px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    ">
-        <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            color: {COLORS['dark_blue']};
-        ">
-            <span style="
-                background-color: {COLORS['vivid_orange']};
-                color: white;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
-                font-size: 16px;
-            ">📤</span>
-            <h4 style="margin: 0; color: {COLORS['dark_blue']};">Importation des données</h4>
+    <div class="local-kpi-container">
+        <div class="local-kpi-title">
+            <span style="margin-right:10px;">📤</span> IMPORTATION DES DONNÉES
         </div>
     """, unsafe_allow_html=True)
     
@@ -211,32 +399,9 @@ with st.sidebar:
     
     # Section Période
     st.markdown(f"""
-    <div style="
-        background: rgba(255,255,255,0.95);
-        padding: 18px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    ">
-        <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            color: {COLORS['dark_blue']};
-        ">
-            <span style="
-                background-color: {COLORS['vivid_orange']};
-                color: white;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
-                font-size: 16px;
-            ">📅</span>
-            <h4 style="margin: 0; color: {COLORS['dark_blue']};">Période d'analyse</h4>
+    <div class="local-kpi-container">
+        <div class="local-kpi-title">
+            <span style="margin-right:10px;">📅</span> PÉRIODE D'ANALYSE
         </div>
     """, unsafe_allow_html=True)
     
@@ -254,32 +419,9 @@ with st.sidebar:
     
     # Section Visualisation
     st.markdown(f"""
-    <div style="
-        background: rgba(255,255,255,0.95);
-        padding: 18px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    ">
-        <div style="
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            color: {COLORS['dark_blue']};
-        ">
-            <span style="
-                background-color: {COLORS['vivid_orange']};
-                color: white;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-right: 10px;
-                font-size: 16px;
-            ">📊</span>
-            <h4 style="margin: 0; color: {COLORS['dark_blue']};">Options de visualisation</h4>
+    <div class="local-kpi-container">
+        <div class="local-kpi-title">
+            <span style="margin-right:10px;">📊</span> OPTIONS DE VISUALISATION
         </div>
     """, unsafe_allow_html=True)
     
@@ -311,16 +453,16 @@ with st.sidebar:
             
             st.markdown(f"""
             <div style="
-                background: {COLORS['mint_green']}15;
+                background: {COLORS['light_green']}15;
                 padding: 15px;
                 border-radius: 10px;
-                border-left: 4px solid {COLORS['mint_green']};
+                border-left: 4px solid {COLORS['light_green']};
                 margin-top: 20px;
-                color: {COLORS['dark_blue']};
+                color: {COLORS['dark_text']};
             ">
                 <div style="display: flex; align-items: center; margin-bottom: 8px;">
                     <span style="
-                        background-color: {COLORS['mint_green']};
+                        background-color: {COLORS['light_green']};
                         color: white;
                         width: 25px;
                         height: 25px;
@@ -331,12 +473,12 @@ with st.sidebar:
                         margin-right: 10px;
                         font-size: 14px;
                     ">✓</span>
-                    <strong style="font-size: 15px; color: {COLORS['dark_blue']};">Données chargées</strong>
+                    <strong style="font-size: 15px; color: {COLORS['dark_text']};">Données chargées</strong>
                 </div>
-                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_blue']};">
+                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
                     <strong>Enregistrements :</strong> {len(df_pluvio):,}
                 </p>
-                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_blue']};">
+                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
                     <strong>Période :</strong> {start_date.strftime('%d/%m/%Y')} → {end_date.strftime('%d/%m/%Y')}
                 </p>
             </div>
@@ -349,12 +491,12 @@ st.markdown(f"""
 <div style="
     background: white;
     padding: 25px;
-    border-radius: 12px;
+    border-radius: 16px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 ">
     <h1 style="
-        color: {COLORS['dark_blue']};
+        color: {COLORS['primary_green']};
         margin: 0;
         text-align: center;
         font-weight: 700;
@@ -362,7 +504,7 @@ st.markdown(f"""
         🇹🇳 SmartSDGTunisia - Pluviométrie
     </h1>
     <p style="
-        color: {COLORS['dark_blue']}90;
+        color: {COLORS['light_text']};
         text-align: center;
         margin: 10px 0 0 0;
         font-size: 16px;
@@ -383,15 +525,15 @@ m = folium.Map(
 
 # Style des couches cohérent avec la palette
 style_del = {
-    'fillColor': COLORS['mint_green'],
-    'color': COLORS['dark_blue'],
+    'fillColor': COLORS['light_green'],
+    'color': COLORS['primary_green'],
     'weight': 1.2,
     'fillOpacity': 0.6
 }
 
 style_gouv = {
-    'fillColor': COLORS['sky_blue'],
-    'color': COLORS['dark_blue'],
+    'fillColor': COLORS['lighter_green'],
+    'color': COLORS['primary_green'],
     'weight': 2,
     'fillOpacity': 0.3
 }
@@ -407,7 +549,7 @@ folium.GeoJson(
         style=f"""
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: white;
-            color: {COLORS['dark_blue']};
+            color: {COLORS['primary_green']};
             padding: 8px;
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -427,7 +569,7 @@ folium.GeoJson(
         style=f"""
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: white;
-            color: {COLORS['dark_blue']};
+            color: {COLORS['primary_green']};
             padding: 8px;
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -478,15 +620,18 @@ st.markdown(f"""
     margin-top: 50px;
     padding: 15px;
     text-align: center;
-    color: {COLORS['dark_blue']};
+    color: {COLORS['light_text']};
     font-size: 14px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 ">
     © 2023 SmartSDGTunisia - Plateforme de suivi ODD<br>
-    <span style="font-size: 12px; color: {COLORS['dark_blue']}80;">
+    <span style="font-size: 12px; color: {COLORS['light_text']}80;">
         Données fournies par l'INS Tunisie et les partenaires techniques
     </span>
 </div>
 """, unsafe_allow_html=True)
+
+# Fermeture de la div main-content
+st.markdown("</div>", unsafe_allow_html=True)

@@ -10,24 +10,21 @@ from scripts.data_utils import load_pluviometry
 # --- Configuration de la page ---
 st.set_page_config(
     layout="wide",
-    page_title="SmartSDGTunisia - Répartition biologique",
+    page_title="ONAGRI - Répartition biologique",
     page_icon="🌱",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="auto"
 )
 
-# Import et affichage de la navbar
-from components.navbar import render_navbar
-render_navbar("Thèmes ODD")  # Adaptez selon votre structure de navigation
-
-# 🎨 Palette de couleurs cohérente
+# 🎨 Palette de couleurs cohérente avec le thème vert
 COLORS = {
-    "sky_blue": "#00B4D8",
-    "mint_green": "#43AA8B",
-    "vivid_orange": "#F8961E",
-    "raspberry_pink": "#F15BB5",
-    "soft_purple": "#9B5DE5",
+    "primary": "#1E6C41",      # Vert foncé
+    "secondary": "#2E7D32",    # Vert
+    "accent": "#4CAF50",       # Vert clair
+    "background": "#F5FBF5",   # Fond très clair
+    "text": "#263238",         # Texte foncé
+    "white": "#FFFFFF",
     "light_gray": "#F0F0F0",
-    "dark_blue": "#1A1A2E"
+    "orange": "#F27D16"        # Orange pour les accents
 }
 
 # --- CSS Personnalisé ---
@@ -54,7 +51,7 @@ st.markdown(f"""
 
     /* Style global existant */
     [data-testid="stHeader"] {{
-        background-color: {COLORS['dark_blue']} !important;
+        background-color: {COLORS['primary']} !important;
         padding: 0;
     }}
     
@@ -63,12 +60,12 @@ st.markdown(f"""
     }}
     
     .stApp {{
-        background-color: {COLORS['light_gray']};
+        background-color: {COLORS['background']};
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }}
     
     h1, h2, h3, h4 {{
-        color: {COLORS['dark_blue']};
+        color: {COLORS['primary']};
         font-weight: 600;
     }}
     
@@ -78,7 +75,7 @@ st.markdown(f"""
         padding: 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         margin-bottom: 20px;
-        border-left: 4px solid {COLORS['sky_blue']};
+        border-left: 4px solid {COLORS['accent']};
         transition: all 0.3s ease;
     }}
     
@@ -88,18 +85,18 @@ st.markdown(f"""
     }}
     
     .section-title {{
-        color: {COLORS['dark_blue']};
-        border-bottom: 2px solid {COLORS['vivid_orange']};
+        color: {COLORS['primary']};
+        border-bottom: 2px solid {COLORS['orange']};
         padding-bottom: 8px;
         margin-bottom: 20px;
     }}
     
     section[data-testid="stSidebar"] {{
-        background-color: {COLORS['dark_blue']} !important;
+        background-color: {COLORS['primary']} !important;
     }}
     
     .sidebar .sidebar-content {{
-        background: linear-gradient(180deg, {COLORS['dark_blue']}, #1E1E3C) !important;
+        background: linear-gradient(180deg, {COLORS['primary']}, #1E3C1E) !important;
         padding: 20px 15px !important;
     }}
     
@@ -118,7 +115,7 @@ st.markdown(f"""
     }}
     
     .stButton>button {{
-        background: {COLORS['vivid_orange']} !important;
+        background: {COLORS['orange']} !important;
         color: white !important;
         border-radius: 8px !important;
         padding: 10px 16px !important;
@@ -128,7 +125,7 @@ st.markdown(f"""
     }}
     
     .stButton>button:hover {{
-        background: {COLORS['raspberry_pink']} !important;
+        background: {COLORS['secondary']} !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
     }}
@@ -155,7 +152,7 @@ st.markdown(f"""
     }}
     
     .local-kpi-title {{
-        color: {COLORS['dark_blue']};
+        color: {COLORS['primary']};
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 20px;
@@ -168,7 +165,7 @@ st.markdown(f"""
         display: block;
         width: 50px;
         height: 3px;
-        background: {COLORS['vivid_orange']};
+        background: {COLORS['orange']};
         margin: 8px auto 0;
     }}
     
@@ -203,14 +200,123 @@ st.markdown(f"""
     
     .local-kpi-comparison {{
         font-size: 0.8rem;
-        color: {COLORS['dark_blue']};
+        color: {COLORS['primary']};
         text-align: center;
         padding: 5px;
         border-radius: 12px;
-        background: rgba(0,180,216,0.1);
+        background: rgba(30,108,65,0.1);
+    }}
+    
+    /* Barre de navigation modernisée */
+    .navbar {{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['secondary']});
+        padding: 0.8rem 0;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: center;
+    }}
+    
+    .nav-container {{
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 1.5rem;
+    }}
+    
+    .nav-brand {{
+        color: {COLORS['white']};
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-right: 2.5rem;
+        display: flex;
+        align-items: center;
+    }}
+    
+    .nav-links {{
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        gap: 0.5rem;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }}
+    
+    .nav-links::-webkit-scrollbar {{
+        display: none;
+    }}
+    
+    .nav-link {{
+        color: {COLORS['white']} !important;
+        text-decoration: none !important;
+        padding: 0.6rem 1.2rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.25s ease;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+    }}
+    
+    .nav-link:hover {{
+        background: rgba(255,255,255,0.15);
+        transform: translateY(-2px);
+    }}
+    
+    .nav-link.active {{
+        background: {COLORS['primary']};
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }}
+    
+    .nav-icon {{
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }}
+    
+    .main-content {{
+        padding-top: 5rem;
+        padding-bottom: 2rem;
     }}
 </style>
 """, unsafe_allow_html=True)
+
+# --- Fonction pour afficher la navbar ---
+def render_navbar(current="Accueil"):
+    """Barre de navigation modernisée"""
+    st.markdown(f"""
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">🌾 ONAGRI</div>
+            <div class="nav-links">
+                <a href="/" class="nav-link {'active' if current == 'Accueil' else ''}" target="_self">
+                    <span class="nav-icon">🏠</span> Accueil
+                </a>
+                <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
+                    <span class="nav-icon">🌧️</span> Pluviométrie
+                </a>
+                <a href="/rainfull_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
+                    <span class="nav-icon">🌦️</span> Siliana/Kairouan
+                </a>
+                <a href="/Repartition_Biol" class="nav-link {'active' if current == 'Répartition Bio' else ''}" target="_self">
+                    <span class="nav-icon">🧬</span> Biologique
+                </a>
+                <a href="/Eau_Portale" class="nav-link {'active' if current == 'Eau Potable' else ''}" target="_self">
+                    <span class="nav-icon">💧</span> Eau Potable
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="main-content">
+    """, unsafe_allow_html=True)
+
+# --- Afficher la navbar avec l'onglet actif ---
+render_navbar("Répartition Bio")
 
 # --- Chargement des données ---
 gdf_gouv, gdf_del = load_geodata()
@@ -238,7 +344,7 @@ top_palmiers = df_bio.nlargest(3, 'PALMIER_DATTIER')[['GOUVERNORAT', 'PALMIER_DA
 with st.sidebar:
     st.markdown(f"""
     <div style="
-        background: linear-gradient(135deg, {COLORS['soft_purple']}, {COLORS['sky_blue']});
+        background: linear-gradient(135deg, {COLORS['primary']}, {COLORS['orange']});
         padding: 25px;
         border-radius: 12px;
         margin-bottom: 30px;
@@ -255,18 +361,18 @@ with st.sidebar:
 # --- En-tête Principal ---
 st.markdown(f"""
 <div style="background: white; padding: 25px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-    <h1 style="color: {COLORS['dark_blue']}; margin: 0; text-align: center; font-weight: 700;">
-        🇹🇳 SmartSDGTunisia - Répartition Biologique
+    <h1 style="color: {COLORS['primary']}; margin: 0; text-align: center; font-weight: 700;">
+        🌱 Répartition Biologique en Tunisie
     </h1>
-    <p style="color: {COLORS['dark_blue']}90; text-align: center; margin: 10px 0 0 0; font-size: 16px;">
-        Plateforme de visualisation des cultures en Tunisie
+    <p style="color: {COLORS['primary']}90; text-align: center; margin: 10px 0 0 0; font-size: 16px;">
+        Plateforme de visualisation des cultures et de la biodiversité agricole
     </p>
 </div>
 """, unsafe_allow_html=True)
 
 # --- Section KPI Nationaux ---
 st.markdown(f"""
-<div style="background:{COLORS['dark_blue']}; padding:15px; border-radius:10px; margin-bottom:25px">
+<div style="background:{COLORS['primary']}; padding:15px; border-radius:10px; margin-bottom:25px">
     <h2 style="color:white; text-align:center; margin:0">📊 INDICATEURS NATIONAUX</h2>
 </div>
 """, unsafe_allow_html=True)
@@ -276,36 +382,36 @@ col1, col2, col3, col4 = st.columns(4)
 
 with col1:
     st.markdown(f"""
-    <div class="card" style="border-left: 4px solid {COLORS['sky_blue']}; text-align:center">
+    <div class="card" style="border-left: 4px solid {COLORS['accent']}; text-align:center">
         <h3>🌳 Oliviers</h3>
-        <h1 style="color:{COLORS['sky_blue']}">{total_oliviers:,}</h1>
+        <h1 style="color:{COLORS['accent']}">{total_oliviers:,}</h1>
         <p>+12% vs 2022</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col2:
     st.markdown(f"""
-    <div class="card" style="border-left: 4px solid {COLORS['mint_green']}; text-align:center">
+    <div class="card" style="border-left: 4px solid {COLORS['secondary']}; text-align:center">
         <h3>🌴 Palmiers</h3>
-        <h1 style="color:{COLORS['mint_green']}">{total_palmiers:,}</h1>
+        <h1 style="color:{COLORS['secondary']}">{total_palmiers:,}</h1>
         <p>Dont 80% à Tozeur</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col3:
     st.markdown(f"""
-    <div class="card" style="border-left: 4px solid {COLORS['vivid_orange']}; text-align:center">
+    <div class="card" style="border-left: 4px solid {COLORS['orange']}; text-align:center">
         <h3>🏞️ Surfaces</h3>
-        <h1 style="color:{COLORS['vivid_orange']}">{surface_agricole:,} ha</h1>
+        <h1 style="color:{COLORS['orange']}">{surface_agricole:,} ha</h1>
         <p>Dont {surface_forestiere:,} ha forestiers</p>
     </div>
     """, unsafe_allow_html=True)
 
 with col4:
     st.markdown(f"""
-    <div class="card" style="border-left: 4px solid {COLORS['raspberry_pink']}; text-align:center">
+    <div class="card" style="border-left: 4px solid {COLORS['primary']}; text-align:center">
         <h3>📍 Couverture</h3>
-        <h1 style="color:{COLORS['raspberry_pink']}">{gouvernorats_actifs}/24</h1>
+        <h1 style="color:{COLORS['primary']}">{gouvernorats_actifs}/24</h1>
         <p>Gouvernorats productifs</p>
     </div>
     """, unsafe_allow_html=True)
@@ -317,7 +423,7 @@ col5, col6 = st.columns(2)
 with col5:
     st.markdown(f"""
     <div class="card">
-        <h3 style="color:{COLORS['dark_blue']}">🏆 Top 3 Oliviers</h3>
+        <h3 style="color:{COLORS['primary']}">🏆 Top 3 Oliviers</h3>
         <table style="width:100%">
             <tr><th>Gouvernorat</th><th>Nombre</th><th>Part</th></tr>
             <tr><td>{top_oliviers.iloc[0,0]}</td><td>{top_oliviers.iloc[0,1]:,}</td><td>{(top_oliviers.iloc[0,1]/total_oliviers*100):.1f}%</td></tr>
@@ -330,7 +436,7 @@ with col5:
 with col6:
     st.markdown(f"""
     <div class="card">
-        <h3 style="color:{COLORS['dark_blue']}">🏆 Top 3 Palmiers</h3>
+        <h3 style="color:{COLORS['primary']}">🏆 Top 3 Palmiers</h3>
         <table style="width:100%">
             <tr><th>Gouvernorat</th><th>Nombre</th><th>Part</th></tr>
             <tr><td>{top_palmiers.iloc[0,0]}</td><td>{top_palmiers.iloc[0,1]:,}</td><td>{(top_palmiers.iloc[0,1]/total_palmiers*100):.1f}%</td></tr>
@@ -352,8 +458,8 @@ with col_map:
     # Création de la carte
     m = folium.Map(location=[34, 9], zoom_start=6, tiles="cartodbpositron")
     style_gouv = {
-        'fillColor': COLORS['sky_blue'],
-        'color': COLORS['dark_blue'],
+        'fillColor': COLORS['accent'],
+        'color': COLORS['primary'],
         'weight': 2,
         'fillOpacity': 0.3
     }
@@ -411,7 +517,7 @@ with col_kpi:
             st.markdown(f"""
             <div class="local-kpi-card">
                 <div class="local-kpi-label">Oliviers</div>
-                <div class="local-kpi-value" style="color:{COLORS['sky_blue']}">{gouv_data['OLIVIER']:,}</div>
+                <div class="local-kpi-value" style="color:{COLORS['accent']}">{gouv_data['OLIVIER']:,}</div>
                 <div class="local-kpi-comparison">
                     {(gouv_data['OLIVIER']/total_oliviers*100):.1f}% du national
                 </div>
@@ -421,7 +527,7 @@ with col_kpi:
             st.markdown(f"""
             <div class="local-kpi-card">
                 <div class="local-kpi-label">Surface Arboricole</div>
-                <div class="local-kpi-value" style="color:{COLORS['soft_purple']}">{gouv_data['arboriculture']:,} ha</div>
+                <div class="local-kpi-value" style="color:{COLORS['primary']}">{gouv_data['arboriculture']:,} ha</div>
                 <div class="local-kpi-comparison">
                     {(gouv_data['arboriculture']/surface_arboriculture*100):.1f}% du national
                 </div>
@@ -432,7 +538,7 @@ with col_kpi:
             st.markdown(f"""
             <div class="local-kpi-card">
                 <div class="local-kpi-label">Palmiers Dattiers</div>
-                <div class="local-kpi-value" style="color:{COLORS['mint_green']}">{gouv_data['PALMIER_DATTIER']:,}</div>
+                <div class="local-kpi-value" style="color:{COLORS['secondary']}">{gouv_data['PALMIER_DATTIER']:,}</div>
                 <div class="local-kpi-comparison">
                     {(gouv_data['PALMIER_DATTIER']/total_palmiers*100):.1f}% du national
                 </div>
@@ -442,7 +548,7 @@ with col_kpi:
             st.markdown(f"""
             <div class="local-kpi-card">
                 <div class="local-kpi-label">Surface Forestière</div>
-                <div class="local-kpi-value" style="color:{COLORS['vivid_orange']}">{gouv_data['foret']:,} ha</div>
+                <div class="local-kpi-value" style="color:{COLORS['orange']}">{gouv_data['foret']:,} ha</div>
                 <div class="local-kpi-comparison">
                     {(gouv_data['foret']/surface_forestiere*100):.1f}% du national
                 </div>
@@ -453,11 +559,11 @@ with col_kpi:
         rank_olivier = int(df_bio['OLIVIER'].rank(ascending=False, method='min').loc[df_bio['GOUVERNORAT'] == st.session_state.selected_gouv].values[0])
         
         st.markdown(f"""
-        <div class="local-kpi-card" style="text-align:center; background: rgba(26,26,46,0.03);">
+        <div class="local-kpi-card" style="text-align:center; background: rgba(30,108,65,0.03);">
             <div style="font-size:0.9rem; color:#555;">Classement National</div>
             <div style="display:inline-block; margin:0 15px;">
                 <div style="font-size:0.8rem;">Oliviers</div>
-                <div style="font-size:1.5rem; font-weight:700; color:{COLORS['dark_blue']}">#{rank_olivier}</div>
+                <div style="font-size:1.5rem; font-weight:700; color:{COLORS['primary']}">#{rank_olivier}</div>
             </div>
         </div>
         </div>  <!-- Fermeture du container -->
@@ -481,3 +587,6 @@ with col_kpi:
         </div>
         </div>  <!-- Fermeture du container -->
         """, unsafe_allow_html=True)
+
+# Fermeture du main-content
+st.markdown("</div>", unsafe_allow_html=True)
