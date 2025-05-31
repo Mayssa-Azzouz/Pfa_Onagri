@@ -382,6 +382,7 @@ def render_navbar(current="Accueil"):
     </nav>
     <div class="main-content">
     """, unsafe_allow_html=True)
+    
 
 # --- Chargement des données ---
 @st.cache_data

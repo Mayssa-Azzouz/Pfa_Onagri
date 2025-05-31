@@ -384,7 +384,8 @@ def render_navbar(current_page="Eau Potable"):
     """, unsafe_allow_html=True)
 
 # --- Affichage de la navbar ---
-render_navbar()
+render_navbar("Eau portable")
+
 
 # --- Chargement des données ---
 @st.cache_data

@@ -445,7 +445,7 @@ render_navbar(current_page)
 
 if current_page == "Pluviometrie":
     pluviometrie_page()
-elif current_page == "rainfull_map":
+elif current_page == "rainfall_map":
     regional_page()
 elif current_page == "Repartition_Biol":
     biologique_page()
