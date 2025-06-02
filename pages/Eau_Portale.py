@@ -371,7 +371,7 @@ def render_navbar(current_page="Eau Potable"):
                 <a href="/Pluviometrie" class="nav-link {'active' if current_page == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
                 </a>
-                <a href="/rainfull_map" class="nav-link {'active' if current_page == 'Pluviométrie Région' else ''}" target="_self">
+                <a href="/rainfall_map" class="nav-link {'active' if current_page == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
                 </a>
                 <a href="/Repartition_Biol" class="nav-link {'active' if current_page == 'Répartition Bio' else ''}" target="_self">

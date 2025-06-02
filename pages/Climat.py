@@ -811,32 +811,6 @@ def home_page():
         year_filter = st.slider("Année", 2010, 2023, 2022)
         region_filter = st.selectbox("Région", ["Toutes", "Nord", "Centre", "Sud"])
     
-    st.markdown(f"""
-    <div style="text-align:center; margin-bottom:1rem;">
-        <h1 style="color:{COLORS['primary']}; font-size:2.5rem; margin-bottom:0.5rem;">
-            Tableau de Bord Agricole
-        </h1>
-        <p style="font-size:1.2rem; color:#555;">
-            Plateforme de visualisation des données agricoles tunisiennes
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    cols = st.columns(2)
-    with cols[0]:
-        theme_card("🌧️", "Pluviométrie Nationale", 
-                 "Analyse spatiale des précipitations sur toute la Tunisie", 
-                 "Pluviometrie")
-        theme_card("🌦️", "Pluviométrie Régionale", 
-                 "Données détaillées pour les régions de Siliana et Kairouan", 
-                 "rainfull_map")
-    with cols[1]:
-        theme_card("🧬", "Répartition Biologique", 
-                 "Exploration de la biodiversité agricole par région", 
-                 "Repartition_Biol")
-        theme_card("💧", "Ressources en Eau", 
-                 "Suivi des indicateurs de distribution d'eau potable", 
-                 "Eau_Portale")
 
 def pluviometrie_page():
     """Page pluviométrie nationale"""
