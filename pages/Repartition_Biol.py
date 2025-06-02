@@ -300,7 +300,10 @@ def render_navbar(current="Accueil"):
                 <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
                 </a>
-                <a href="/rainfull_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
+                <a href="/Climat" class="nav-link {'active' if current == 'Climat' else ''}" target="_self">
+                    <span class="nav-icon">🌤️</span> Climat
+                </a>
+                <a href="/rainfall_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
                 </a>
                 <a href="/Repartition_Biol" class="nav-link {'active' if current == 'Répartition Bio' else ''}" target="_self">

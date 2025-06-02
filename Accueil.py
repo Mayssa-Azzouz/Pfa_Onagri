@@ -257,6 +257,9 @@ def render_navbar(current="Accueil"):
                 <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
                 </a>
+                <a href="/Climat" class="nav-link {'active' if current == 'Climat' else ''}" target="_self">
+                    <span class="nav-icon">🌤️</span> Climat
+                </a>
                 <a href="/rainfall_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
                 </a>
@@ -294,30 +297,6 @@ def theme_card(icon, title, description, page):
 
 def home_page():
     """Page d'accueil"""
-    with st.sidebar:
-        st.write("**Navigation rapide**")
-        selected_page = st.radio(
-            "Sections",
-            ["Accueil", "Pluviométrie", "Pluviométrie Région", "Biologique", "Eau Potable"],
-            index=0,
-            label_visibility="collapsed"
-        )
-        
-        st.write("---")
-        st.write("**Filtres généraux**")
-        year_filter = st.slider("Année", 2010, 2023, 2022)
-        region_filter = st.selectbox("Région", ["Toutes", "Nord", "Centre", "Sud"])
-    
-    st.markdown(f"""
-    <div style="text-align:center; margin-bottom:1rem;">
-        <h1 style="color:{COLORS['primary']}; font-size:2.5rem; margin-bottom:0.5rem;">
-            Tableau de Bord Agricole
-        </h1>
-        <p style="font-size:1.2rem; color:#555;">
-            Plateforme de visualisation des données agricoles tunisiennes
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
     
     cols = st.columns(2)
     with cols[0]:

@@ -355,27 +355,30 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- Barre de navigation ---
-def render_navbar(current_page="Eau Potable"):
+def render_navbar(current="Accueil"):
+    """Barre de navigation modernisée"""
     st.markdown(f"""
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-brand">🌱 SmartSDGTunisia</div>
+            <div class="nav-brand">🌾 ONAGRI</div>
             <div class="nav-links">
-                <a href="/" class="nav-link {'active' if current_page == 'Accueil' else ''}" target="_self">
+                <a href="/" class="nav-link {'active' if current == 'Accueil' else ''}" target="_self">
                     <span class="nav-icon">🏠</span> Accueil
                 </a>
-                <a href="/Eau_Portale" class="nav-link {'active' if current_page == 'Eau Potable' else ''}" target="_self">
-                    <span class="nav-icon">💧</span> Eau Potable
-                </a>
-                <a href="/Pluviometrie" class="nav-link {'active' if current_page == 'Pluviométrie' else ''}" target="_self">
+                <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
                 </a>
-                <a href="/rainfall_map" class="nav-link {'active' if current_page == 'Pluviométrie Région' else ''}" target="_self">
+                <a href="/Climat" class="nav-link {'active' if current == 'Climat' else ''}" target="_self">
+                    <span class="nav-icon">🌤️</span> Climat
+                </a>
+                <a href="/rainfall_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
                 </a>
-                <a href="/Repartition_Biol" class="nav-link {'active' if current_page == 'Répartition Bio' else ''}" target="_self">
+                <a href="/Repartition_Biol" class="nav-link {'active' if current == 'Répartition Bio' else ''}" target="_self">
                     <span class="nav-icon">🧬</span> Biologique
+                </a>
+                <a href="/Eau portable" class="nav-link {'active' if current == 'Eau Potable' else ''}" target="_self">
+                    <span class="nav-icon">💧</span> Eau Potable
                 </a>
             </div>
         </div>

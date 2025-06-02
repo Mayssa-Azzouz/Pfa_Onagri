@@ -174,6 +174,7 @@ st.markdown(f"""
     }}
     
     /* Barre de navigation */
+    /* Navigation modernisée */
     .navbar {{
         position: fixed;
         top: 0;
@@ -309,6 +310,9 @@ def render_navbar(current="Accueil"):
                 <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
                 </a>
+                <a href="/Climat" class="nav-link {'active' if current == 'Climat' else ''}" target="_self">
+                    <span class="nav-icon">🌤️</span> Climat
+                </a>
                 <a href="/rainfall_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
                 </a>
@@ -325,7 +329,9 @@ def render_navbar(current="Accueil"):
     """, unsafe_allow_html=True)
 
 # --- Afficher la navbar avec l'onglet actif ---
-render_navbar("Stations")
+# Application principale
+current_page = get_current_page()
+render_navbar(current_page)
 
 # Données des stations avec la nouvelle station ajoutée
 STATIONS = {
@@ -917,10 +923,6 @@ def get_current_page():
         return st.query_params.get("page", ["Accueil"])[0]
     return "Accueil"
 
-# Application principale
-current_page = get_current_page()
-render_navbar(current_page)
-
 if current_page == "Pluviometrie":
     pluviometrie_page()
 elif current_page == "rainfall_map":
@@ -931,8 +933,3 @@ elif current_page == "Eau_Portale":
     eau_page()
 else:
     home_page()
-
-
-
-# Fermeture du main-content
-st.markdown("</div>", unsafe_allow_html=True)

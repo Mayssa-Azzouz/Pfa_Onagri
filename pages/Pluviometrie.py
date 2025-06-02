@@ -329,8 +329,7 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# --- Barre de navigation personnalisée ---
-def render_navbar(current="Pluviométrie"):
+def render_navbar(current="Accueil"):
     """Barre de navigation modernisée"""
     st.markdown(f"""
     <nav class="navbar">
@@ -342,6 +341,9 @@ def render_navbar(current="Pluviométrie"):
                 </a>
                 <a href="/Pluviometrie" class="nav-link {'active' if current == 'Pluviométrie' else ''}" target="_self">
                     <span class="nav-icon">🌧️</span> Pluviométrie
+                </a>
+                <a href="/Climat" class="nav-link {'active' if current == 'Climat' else ''}" target="_self">
+                    <span class="nav-icon">🌤️</span> Climat
                 </a>
                 <a href="/rainfall_map" class="nav-link {'active' if current == 'Pluviométrie Région' else ''}" target="_self">
                     <span class="nav-icon">🌦️</span> Siliana/Kairouan
@@ -364,6 +366,22 @@ render_navbar("Pluviométrie")
 # --- Chargement des données géographiques ---
 gdf_gouv, gdf_del = load_geodata()
 
+# --- Chargement des données pluviométriques ---
+DATA_PATH = "data/pluviometrie.csv"  # Chemin vers votre fichier CSV
+
+@st.cache_data
+def load_pluvio_data():
+    try:
+        df = pd.read_csv(DATA_PATH)
+        if 'Date' in df.columns:
+            df['Date'] = pd.to_datetime(df['Date'])
+        return df
+    except Exception as e:
+        st.error(f"Erreur lors du chargement des données : {e}")
+        return None
+
+df_pluvio = load_pluvio_data()
+
 # --- Sidebar Redesign ---
 with st.sidebar:
     # En-tête de la sidebar
@@ -385,17 +403,13 @@ with st.sidebar:
     st.markdown(f"""
     <div class="local-kpi-container">
         <div class="local-kpi-title">
-            <span style="margin-right:10px;">📤</span> IMPORTATION DES DONNÉES
+            <span style="margin-right:10px;">📤</span> DONNÉES CHARGÉES
         </div>
+        <div style="color: {COLORS['primary_green']}; font-weight: 500; text-align: center; padding: 10px;">
+            Fichier: pluviometrie.csv
+        </div>
+    </div>
     """, unsafe_allow_html=True)
-    
-    uploaded_file = st.file_uploader(
-        "Choisir un fichier CSV",
-        type=['csv'],
-        help="Format requis : Date, Station, Pluvio_du_jour",
-        label_visibility="collapsed"
-    )
-    st.markdown("</div>", unsafe_allow_html=True)
     
     # Section Période
     st.markdown(f"""
@@ -443,48 +457,46 @@ with st.sidebar:
     st.markdown("</div>", unsafe_allow_html=True)
     
     # Section Status
-    if uploaded_file is not None:
-        df_pluvio = load_pluviometry(uploaded_file)
-        if df_pluvio is not None:
-            df_pluvio = df_pluvio[
-                (df_pluvio['Date'].dt.date >= start_date) &
-                (df_pluvio['Date'].dt.date <= end_date)
-            ]
-            
-            st.markdown(f"""
-            <div style="
-                background: {COLORS['light_green']}15;
-                padding: 15px;
-                border-radius: 10px;
-                border-left: 4px solid {COLORS['light_green']};
-                margin-top: 20px;
-                color: {COLORS['dark_text']};
-            ">
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                    <span style="
-                        background-color: {COLORS['light_green']};
-                        color: white;
-                        width: 25px;
-                        height: 25px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin-right: 10px;
-                        font-size: 14px;
-                    ">✓</span>
-                    <strong style="font-size: 15px; color: {COLORS['dark_text']};">Données chargées</strong>
-                </div>
-                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
-                    <strong>Enregistrements :</strong> {len(df_pluvio):,}
-                </p>
-                <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
-                    <strong>Période :</strong> {start_date.strftime('%d/%m/%Y')} → {end_date.strftime('%d/%m/%Y')}
-                </p>
+    if df_pluvio is not None:
+        df_pluvio = df_pluvio[
+            (df_pluvio['Date'].dt.date >= start_date) &
+            (df_pluvio['Date'].dt.date <= end_date)
+        ]
+        
+        st.markdown(f"""
+        <div style="
+            background: {COLORS['light_green']}15;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid {COLORS['light_green']};
+            margin-top: 20px;
+            color: {COLORS['dark_text']};
+        ">
+            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <span style="
+                    background-color: {COLORS['light_green']};
+                    color: white;
+                    width: 25px;
+                    height: 25px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-right: 10px;
+                    font-size: 14px;
+                ">✓</span>
+                <strong style="font-size: 15px; color: {COLORS['dark_text']};">Données chargées</strong>
             </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.error("❌ Format de fichier invalide")
+            <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
+                <strong>Enregistrements :</strong> {len(df_pluvio):,}
+            </p>
+            <p style="margin: 5px 0 0 25px; font-size: 14px; color: {COLORS['dark_text']};">
+                <strong>Période :</strong> {start_date.strftime('%d/%m/%Y')} → {end_date.strftime('%d/%m/%Y')}
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.error("❌ Erreur de chargement des données")
 
 # --- Titre Principal ---
 st.markdown(f"""

@@ -323,11 +323,11 @@ class RainfallPredictor:
     
     def build_model(self):
         model = keras.Sequential([
-            layers.LSTM(64, activation='relu', input_shape=(self.look_back, 1), return_sequences=True),
-            layers.Dropout(0.2),
-            layers.LSTM(32, activation='relu'),
+            layers.Input(shape=(self.look_back, 1)),
+            layers.LSTM(64, activation='tanh'),
             layers.Dense(self.forecast_horizon)
         ])
+
         model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.001),
                     loss='mse')
         return model
@@ -349,7 +349,7 @@ class RainfallPredictor:
             
             history = model.fit(
                 X_train, y_train,
-                epochs=100,
+                epochs=150,
                 batch_size=32,
                 validation_split=0.2,
                 callbacks=[early_stopping],
